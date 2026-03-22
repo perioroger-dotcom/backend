@@ -185,7 +185,7 @@ class EpgGuide {
             console.error('Error loading EPG:', err);
             this.container.innerHTML = `
         <div class="empty-state">
-          <p>Error loading EPG</p>
+          <p>Erro ao carregar a EPG</p>
           <p class="hint">${err.message}</p>
         </div>
       `;
@@ -201,7 +201,7 @@ class EpgGuide {
         const sources = allSources.filter(s => (s.type === 'epg' || s.type === 'xtream') && s.enabled);
 
         if (sources.length === 0) {
-            throw new Error('No EPG sources or Xtream accounts configured');
+            throw new Error('Não há fontes de EPG configuradas');
         }
 
         // Build query params for server-side caching

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NodeCast TV</title>
+    <title>Logar - LockeyCAST TV</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -171,29 +173,29 @@
                     <path
                         d="M169.71,87.87c-4.77,0-9.1,1.88-12.31,4.92L35.3,22.3c.35-1.4.56-2.86.56-4.37C35.86,8.03,27.83,0,17.93,0S0,8.03,0,17.93c0,8.44,5.84,15.5,13.69,17.4v140c-7.71,2.01-13.41,8.99-13.41,17.33,0,9.9,8.03,17.93,17.93,17.93s17.93-8.03,17.93-17.93c0-1.56-.22-3.07-.6-4.51l121.21-69.98c3.26,3.42,7.86,5.55,12.95,5.55,9.9,0,17.93-8.03,17.93-17.93s-8.03-17.93-17.93-17.93ZM152.78,99.92c-.14.41-.27.83-.38,1.25h-51.47l-44.18-24.72L30.4,30.8c.33-.32.64-.65.94-.99l121.45,70.12ZM22.17,175.2V35.33c.23-.05.45-.11.67-.17l26.35,45.65-.34,50.04-25.74,44.59c-.31-.09-.63-.17-.95-.24ZM31.52,180.69c-.27-.3-.55-.6-.84-.89l25.48-44.13,44.64-25.78h51.47c.07.32.15.63.24.94L31.52,180.69Z" />
                 </svg>
-                <h1>nodecast-tv</h1>
-                <p id="login-subtitle">Sign in to continue</p>
+                <h1>LockeyCAST TV</h1>
+                <p id="login-subtitle">Logue para continuar</p>
             </div>
 
             <div class="error-message" id="error-message"></div>
             <div class="setup-message" id="setup-message">
-                Welcome! Please create your admin account to get started.
+                Olá ! Seja bem-vindo crie sua conta para continuar
             </div>
 
             <form id="login-form">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Usuario</label>
                     <input type="text" id="username" name="username" required autocomplete="username"
-                        placeholder="Enter your username">
+                        placeholder="Coloque seu nome">
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Senha</label>
                     <input type="password" id="password" name="password" required autocomplete="current-password"
-                        minlength="6" placeholder="Enter your password">
+                        minlength="6" placeholder="Coloque sua senha    ">
                 </div>
 
-                <button type="submit" class="btn-login" id="submit-btn">Sign In</button>
+                <button type="submit" class="btn-login" id="submit-btn">Logar</button>
             </form>
 
             <div class="sso-divider" style="text-align: center; margin: 20px 0; position: relative;">
@@ -211,7 +213,7 @@
                     <path
                         d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
                 </svg>
-                Sign in with SSO
+                Logar com SSO
             </button>
 
             <style>
@@ -252,10 +254,10 @@
 
                 if (data.setupRequired) {
                     isSetupMode = true;
-                    document.getElementById('login-subtitle').textContent = 'Create Admin Account';
-                    document.getElementById('submit-btn').textContent = 'Create Account';
+                    document.getElementById('login-subtitle').textContent = 'Criar conta admin';
+                    document.getElementById('submit-btn').textContent = 'Criar conta';
                     document.getElementById('setup-message').classList.add('show');
-                    document.getElementById('password').placeholder = 'Minimum 6 characters';
+                    document.getElementById('password').placeholder = 'Minimo de 6 letras';
                     // Hide SSO in setup mode
                     document.querySelector('.sso-divider').style.display = 'none';
                     document.getElementById('btn-sso-login').style.display = 'none';
@@ -280,7 +282,7 @@
 
             // Disable button
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Please wait...';
+            submitBtn.textContent = 'Por favor espere...';
 
             try {
                 const endpoint = isSetupMode ? '/api/auth/setup' : '/api/auth/login';
@@ -295,7 +297,7 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Authentication failed');
+                    throw new Error(data.error || 'Autenticação falhada');
                 }
 
                 // Store token
@@ -308,7 +310,7 @@
                 errorMessage.textContent = err.message;
                 errorMessage.classList.add('show');
                 submitBtn.disabled = false;
-                submitBtn.textContent = isSetupMode ? 'Create Account' : 'Sign In';
+                submitBtn.textContent = isSetupMode ? 'Criar conta' : 'Logar';
             }
         });
 

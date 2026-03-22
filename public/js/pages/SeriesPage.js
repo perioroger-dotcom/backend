@@ -107,7 +107,7 @@ class SeriesPage {
             const allSources = await API.sources.getAll();
             this.sources = allSources.filter(s => s.type === 'xtream' && s.enabled);
 
-            this.sourceSelect.innerHTML = '<option value="">All Sources</option>';
+            this.sourceSelect.innerHTML = '<option value="">Todas Fontes</option>';
             this.sources.forEach(s => {
                 const option = document.createElement('option');
                 option.value = s.id;
@@ -123,7 +123,7 @@ class SeriesPage {
         try {
             this.categories = [];
             this.hiddenCategoryIds = new Set();
-            this.categorySelect.innerHTML = '<option value="">All Categories</option>';
+            this.categorySelect.innerHTML = '<option value="">Todas Categorias</option>';
 
             const sourceId = this.sourceSelect.value;
             const sourcesToLoad = sourceId
@@ -250,7 +250,7 @@ class SeriesPage {
         this.container.innerHTML = '';
 
         if (this.filteredSeries.length === 0) {
-            this.container.innerHTML = '<div class="empty-state"><p>No series found</p></div>';
+            this.container.innerHTML = '<div class="empty-state"><p>Nenhuma série encontrada</p></div>';
             return;
         }
 

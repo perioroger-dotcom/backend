@@ -95,7 +95,7 @@ class MoviesPage {
             const allSources = await API.sources.getAll();
             this.sources = allSources.filter(s => s.type === 'xtream' && s.enabled);
 
-            this.sourceSelect.innerHTML = '<option value="">All Sources</option>';
+            this.sourceSelect.innerHTML = '<option value="">Todas Fontes</option>';
             this.sources.forEach(s => {
                 const option = document.createElement('option');
                 option.value = s.id;
@@ -111,7 +111,7 @@ class MoviesPage {
         try {
             this.categories = [];
             this.hiddenCategoryIds = new Set(); // Track hidden categories
-            this.categorySelect.innerHTML = '<option value="">All Categories</option>';
+            this.categorySelect.innerHTML = '<option value="">Todas Categorias</option>';
 
             const sourceId = this.sourceSelect.value;
             const sourcesToLoad = sourceId
@@ -238,7 +238,7 @@ class MoviesPage {
         this.container.innerHTML = '';
 
         if (this.filteredMovies.length === 0) {
-            this.container.innerHTML = '<div class="empty-state"><p>No movies found</p></div>';
+            this.container.innerHTML = '<div class="empty-state"><p>Não foram encontrados filmes</p></div>';
             return;
         }
 
