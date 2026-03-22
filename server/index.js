@@ -7,11 +7,24 @@ const syncService = require('./services/syncService');
 // Initialize database
 require('./db');
 
+const express = require('express');
+const cors = require('cors'); // ✅ ADICIONADO
+require('dotenv').config();
+const path = require('path');
+const passport = require('passport');
+const syncService = require('./services/syncService');
+
+// Initialize database
+require('./db');
+
 const app = express();
+
+// ✅ LIBERA ACESSO PARA QUALQUER FRONTEND
+app.use(cors());
+
 const PORT = process.env.PORT || 3000;
 
-// Trust proxy headers (X-Forwarded-Proto, X-Forwarded-For, etc.)
-// Required for correct protocol detection behind reverse proxies (nginx, Caddy, etc.)
+// Trust proxy headers
 app.set('trust proxy', true);
 
 // Middleware
