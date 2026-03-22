@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
 const passport = require('passport');
@@ -11,10 +10,8 @@ require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS
-app.use(cors());
-
-// Trust proxy headers
+// Trust proxy headers (X-Forwarded-Proto, X-Forwarded-For, etc.)
+// Required for correct protocol detection behind reverse proxies (nginx, Caddy, etc.)
 app.set('trust proxy', true);
 
 // Middleware
@@ -30,23 +27,27 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// FFMPEG Configuration
+// FFMPEG Configuration (optional - for transcoding support)
+// Priority: 1. System FFmpeg (better Docker DNS support), 2. ffmpeg-static npm package
 const { execSync } = require('child_process');
 
 function findFFmpeg() {
+    // Try system FFmpeg first (better Docker compatibility)
     try {
         execSync('ffmpeg -version', { stdio: 'ignore' });
         console.log('FFmpeg binary configured at: ffmpeg (system)');
         return 'ffmpeg';
     } catch (e) {
-        // System FFmpeg not found
+        // System FFmpeg not found, try ffmpeg-static
     }
 
+    // Try ffmpeg-static npm package
     try {
         let ffmpegPath = require('ffmpeg-static');
+        // In packaged Electron apps, ffmpeg-static returns path inside .asar archive
+        // but the binary is actually unpacked to app.asar.unpacked
         if (ffmpegPath && ffmpegPath.includes('app.asar')) {
             ffmpegPath = ffmpegPath.replace('app.asar', 'app.asar.unpacked');
         }
@@ -60,6 +61,7 @@ function findFFmpeg() {
 }
 
 function findFFprobe() {
+    // Try system ffprobe first
     try {
         execSync('ffprobe -version', { stdio: 'ignore' });
         console.log('FFprobe binary configured at: ffprobe (system)');
@@ -68,6 +70,7 @@ function findFFprobe() {
         // Not found in system
     }
 
+    // Try @ffprobe-installer/ffprobe package
     try {
         const ffprobePath = require('@ffprobe-installer/ffprobe').path;
         if (ffprobePath) {
@@ -85,14 +88,12 @@ function findFFprobe() {
 app.locals.ffmpegPath = findFFmpeg();
 app.locals.ffprobePath = findFFprobe();
 
-// Dynamic services loader
+// Dynamic services loader - collects exports from files in ./services
 const fs = require('fs');
 const services = {};
-
 try {
     const servicesDir = path.join(__dirname, 'services');
     const serviceFiles = fs.readdirSync(servicesDir).filter(f => f.endsWith('.js'));
-
     for (const file of serviceFiles) {
         const name = file.replace(/\.js$/, '');
         try {
@@ -105,32 +106,36 @@ try {
     console.warn('No services directory found or failed to read services:', e.message);
 }
 
-// Freeze services object
+// Freeze services object to prevent plugins from mutating shared state
 Object.freeze(services);
 
-// Plugin loader
+// Plugin loader: loads any .js file inside server/plugins and calls the
+// exported function with (app, services).
+// Supports both function exports and object exports with lifecycle hooks.
 const loadedPlugins = [];
 
 async function loadPlugins() {
     try {
         const pluginsDir = path.join(__dirname, 'plugins');
-
         if (fs.existsSync(pluginsDir)) {
+            // Sort plugin files alphabetically for deterministic load order
             const pluginFiles = fs.readdirSync(pluginsDir)
                 .filter(f => f.endsWith('.js'))
                 .sort();
 
             for (const file of pluginFiles) {
                 const pluginPath = path.join(pluginsDir, file);
-
                 try {
                     const plugin = require(pluginPath);
 
+                    // Support both function exports and object exports with lifecycle hooks
                     if (typeof plugin === 'function') {
+                        // Direct function export (sync or async)
                         await plugin(app, services);
                         loadedPlugins.push({ name: file, plugin: null });
                         console.log(`✓ Loaded plugin: ${file}`);
                     } else if (plugin && typeof plugin.init === 'function') {
+                        // Object export with init/shutdown lifecycle
                         await plugin.init(app, services);
                         loadedPlugins.push({ name: file, plugin });
                         console.log(`✓ Loaded plugin: ${file} (with lifecycle hooks)`);
@@ -147,10 +152,9 @@ async function loadPlugins() {
     }
 }
 
-// Graceful shutdown
+// Graceful shutdown handler for plugins with shutdown hooks
 process.on('SIGTERM', async () => {
     console.log('SIGTERM received, shutting down plugins...');
-
     for (const { name, plugin } of loadedPlugins) {
         if (plugin && typeof plugin.shutdown === 'function') {
             try {
@@ -161,7 +165,6 @@ process.on('SIGTERM', async () => {
             }
         }
     }
-
     process.exit(0);
 });
 
@@ -195,17 +198,21 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, '0.0.0.0', async () => {
+app.listen(PORT, async () => {
     console.log(`NodeCast TV server running on http://localhost:${PORT}`);
 
+    // Load plugins
     await loadPlugins().catch(err => {
         console.error('Plugin initialization failed:', err);
     });
 
+    // Trigger background sync with delay to allow server to settle
     setTimeout(async () => {
         await syncService.syncAll().catch(console.error);
+        // Start the server-side sync timer after initial sync
         await syncService.startSyncTimer().catch(console.error);
 
+        // Detect hardware acceleration capabilities
         try {
             const hwDetect = require('./services/hwDetect');
             await hwDetect.detect();

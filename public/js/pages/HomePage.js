@@ -33,7 +33,7 @@ class HomePage {
             <div class="dashboard-content" id="home-content">
                 <section class="dashboard-section" id="favorite-channels-section">
                     <div class="section-header">
-                        <h2>Canais favoritos</h2>
+                        <h2>Favorite Channels</h2>
                     </div>
                     <div class="scroll-wrapper">
                         <button class="scroll-arrow scroll-left" aria-label="Scroll left">
@@ -73,7 +73,7 @@ class HomePage {
 
                 <section class="dashboard-section">
                     <div class="section-header">
-                        <h2>Filmes adicionados recentemente</h2>
+                        <h2>Recently Added Movies</h2>
                     </div>
                     <div class="scroll-wrapper">
                         <button class="scroll-arrow scroll-left" aria-label="Scroll left">
@@ -82,7 +82,7 @@ class HomePage {
                         <div class="horizontal-scroll" id="recent-movies-list">
                             <div class="loading-state">
                                 <div class="loading"></div>
-                                <span>Carregando itens adicionados recentemente...</span>
+                                <span>Loading recently added...</span>
                             </div>
                         </div>
                         <button class="scroll-arrow scroll-right" aria-label="Scroll right">
@@ -93,7 +93,7 @@ class HomePage {
 
                 <section class="dashboard-section">
                     <div class="section-header">
-                        <h2>Séries adicionadas recentemente</h2>
+                        <h2>Recently Added Series</h2>
                     </div>
                     <div class="scroll-wrapper">
                         <button class="scroll-arrow scroll-left" aria-label="Scroll left">
@@ -102,7 +102,7 @@ class HomePage {
                         <div class="horizontal-scroll" id="recent-series-list">
                             <div class="loading-state">
                                 <div class="loading"></div>
-                                <span>Carregando itens adicionados recentemente...</span>
+                                <span>Loading recently added...</span>
                             </div>
                         </div>
                         <button class="scroll-arrow scroll-right" aria-label="Scroll right">
@@ -200,7 +200,7 @@ class HomePage {
             const favorites = await window.API.request('GET', '/favorites?itemType=channel');
 
             if (!favorites || favorites.length === 0) {
-                list.innerHTML = '<div class="empty-state hint">Adicionar canais aos favoritos na TV ao vivo</div>';
+                list.innerHTML = '<div class="empty-state hint">Add channels to favorites from Live TV</div>';
                 return;
             }
 
@@ -225,7 +225,7 @@ class HomePage {
             }
 
             if (channels.length === 0) {
-                list.innerHTML = '<div class="empty-state hint">Adicionar canais aos favoritos na TV ao vivo</div>';
+                list.innerHTML = '<div class="empty-state hint">Add channels to favorites from Live TV</div>';
                 return;
             }
 
@@ -354,7 +354,7 @@ class HomePage {
         try {
             const movies = await window.API.request('GET', '/channels/recent?type=movie&limit=12');
             if (!movies || movies.length === 0) {
-                list.innerHTML = '<div class="empty-state hint">Não foram encontrados series adicionados recentemente</div>';
+                list.innerHTML = '<div class="empty-state hint">No recently added movies found</div>';
                 return;
             }
 
@@ -383,7 +383,7 @@ class HomePage {
         try {
             const series = await window.API.request('GET', '/channels/recent?type=series&limit=12');
             if (!series || series.length === 0) {
-                list.innerHTML = '<div class="empty-state hint">Não foram encontradas séries adicionadas recentemente</div>';
+                list.innerHTML = '<div class="empty-state hint">No recently added series found</div>';
                 return;
             }
 

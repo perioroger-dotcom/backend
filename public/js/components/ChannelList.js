@@ -662,7 +662,7 @@ class ChannelList {
         try {
             this.sources = await API.sources.getAll();
             console.log('[ChannelList] loadSources: Got', this.sources?.length || 0, 'sources');
-            this.sourceSelect.innerHTML = '<option value="">Todas fontes</option>';
+            this.sourceSelect.innerHTML = '<option value="">All Sources</option>';
 
             const xtreamSources = this.sources.filter(s => s.type === 'xtream' && s.enabled);
             const m3uSources = this.sources.filter(s => s.type === 'm3u' && s.enabled);
@@ -733,7 +733,7 @@ class ChannelList {
             this.render();
         } catch (err) {
             console.error('Error loading channels:', err);
-            this.container.innerHTML = `<div class="empty-state"><p>Erro ao carregar canais</p><p class="hint">${err.message}</p></div>`;
+            this.container.innerHTML = `<div class="empty-state"><p>Error loading channels</p><p class="hint">${err.message}</p></div>`;
         } finally {
             this.isLoading = false;
         }
